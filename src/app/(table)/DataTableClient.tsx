@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   TableRow,
@@ -8,6 +8,7 @@ import {
   SortDirection,
   FilterState,
   PaginationState,
+  TableState,
 } from '@/types/table';
 import { sortTableRows, getNextSortDirection } from '@/lib/sort';
 import Filters from '@/components/table/Filters';
@@ -20,10 +21,12 @@ interface DataTableClientProps {
 }
 
 // Utility functions for URL state management
-function getUrlState(searchParams: URLSearchParams) {
+function getUrlState(searchParams: URLSearchParams): TableState {
   return {
-    sortField: (searchParams.get('sort') as SortField) || null,
-    sortDirection: (searchParams.get('order') as SortDirection) || null,
+    sort: {
+      field: (searchParams.get('sort') as SortField) || null,
+      direction: (searchParams.get('order') as SortDirection) || null,
+    },
     filters: {
       name: searchParams.get('search') || '',
       status: (searchParams.get('status') as FilterState['status']) || 'ALL',
@@ -38,18 +41,13 @@ function getUrlState(searchParams: URLSearchParams) {
 function updateUrl(
   router: ReturnType<typeof useRouter>,
   pathname: string,
-  state: {
-    sortField: SortField | null;
-    sortDirection: SortDirection;
-    filters: FilterState;
-    pagination: PaginationState;
-  }
+  state: TableState
 ) {
   const params = new URLSearchParams();
 
-  if (state.sortField && state.sortDirection) {
-    params.set('sort', state.sortField);
-    params.set('order', state.sortDirection);
+  if (state.sort.field && state.sort.direction) {
+    params.set('sort', state.sort.field);
+    params.set('order', state.sort.direction);
   }
 
   if (state.filters.name) {
@@ -81,93 +79,102 @@ export default function DataTableClient({ initialData }: DataTableClientProps) {
 
   // Initialize state from URL parameters
   const urlState = getUrlState(searchParams);
-  const [sortField, setSortField] = useState<SortField | null>(
-    urlState.sortField
-  );
-  const [sortDirection, setSortDirection] = useState<SortDirection>(
-    urlState.sortDirection
-  );
-  const [filters, setFilters] = useState<FilterState>(urlState.filters);
-  const [pagination, setPagination] = useState<PaginationState>(
-    urlState.pagination
-  );
+  const [tableState, setTableState] = useState<TableState>(urlState);
 
-  // Update URL when state changes
-  useEffect(() => {
-    updateUrl(router, pathname, {
-      sortField,
-      sortDirection,
-      filters,
-      pagination,
-    });
-  }, [sortField, sortDirection, filters, pagination, router, pathname]);
+  // Helper function to update state and URL atomically
+  const updateTableState = useCallback(
+    (updates: Partial<TableState>) => {
+      setTableState((prevState) => {
+        const newState = { ...prevState, ...updates };
+        updateUrl(router, pathname, newState);
+        return newState;
+      });
+    },
+    [router, pathname]
+  );
 
   // Filter data
   const filteredData = useMemo(() => {
     return initialData.filter((row) => {
       const matchesName = row.name
         .toLowerCase()
-        .includes(filters.name.toLowerCase());
+        .includes(tableState.filters.name.toLowerCase());
       const matchesStatus =
-        filters.status === 'ALL' || row.status === filters.status;
+        tableState.filters.status === 'ALL' ||
+        row.status === tableState.filters.status;
       return matchesName && matchesStatus;
     });
-  }, [initialData, filters]);
+  }, [initialData, tableState.filters]);
 
   // Sort data
   const sortedData = useMemo(() => {
-    if (sortField && sortDirection) {
-      return sortTableRows(filteredData, sortField, sortDirection);
+    if (tableState.sort.field && tableState.sort.direction) {
+      return sortTableRows(
+        filteredData,
+        tableState.sort.field,
+        tableState.sort.direction
+      );
     }
     return filteredData;
-  }, [filteredData, sortField, sortDirection]);
+  }, [filteredData, tableState.sort]);
 
   // Paginate data
   const paginatedData = useMemo(() => {
-    const startIndex = (pagination.page - 1) * pagination.pageSize;
-    const endIndex = startIndex + pagination.pageSize;
+    const startIndex =
+      (tableState.pagination.page - 1) * tableState.pagination.pageSize;
+    const endIndex = startIndex + tableState.pagination.pageSize;
     return sortedData.slice(startIndex, endIndex);
-  }, [sortedData, pagination]);
+  }, [sortedData, tableState.pagination]);
 
   const handleSort = useCallback(
     (field: SortField) => {
       const newDirection = getNextSortDirection(
-        sortField,
+        tableState.sort.field,
         field,
-        sortDirection
+        tableState.sort.direction
       );
-      setSortField(field);
-      setSortDirection(newDirection);
-      setPagination((prev) => ({ ...prev, page: 1 }));
+      updateTableState({
+        sort: { field, direction: newDirection },
+        pagination: { ...tableState.pagination, page: 1 },
+      });
     },
-    [sortField, sortDirection]
+    [tableState.sort, tableState.pagination, updateTableState]
   );
 
-  const handleFiltersChange = useCallback((newFilters: FilterState) => {
-    setFilters(newFilters);
-    setPagination((prev) => ({ ...prev, page: 1 }));
-  }, []);
+  const handleFiltersChange = useCallback(
+    (newFilters: FilterState) => {
+      updateTableState({
+        filters: newFilters,
+        pagination: { ...tableState.pagination, page: 1 },
+      });
+    },
+    [tableState.pagination, updateTableState]
+  );
 
   const handlePaginationChange = useCallback(
     (newPagination: PaginationState) => {
-      setPagination(newPagination);
+      updateTableState({
+        pagination: newPagination,
+      });
     },
-    []
+    [updateTableState]
   );
 
   const handleResetFilters = useCallback(() => {
-    setFilters({ name: '', status: 'ALL' });
-    setSortField(null);
-    setSortDirection(null);
-    setPagination({ page: 1, pageSize: 10 });
-    // Clear URL parameters
-    router.replace('/', { scroll: false });
-  }, [router]);
+    updateTableState({
+      filters: { name: '', status: 'ALL' },
+      sort: { field: null, direction: null },
+      pagination: { page: 1, pageSize: 10 },
+    });
+  }, [updateTableState]);
 
   if (filteredData.length === 0) {
     return (
       <>
-        <Filters filters={filters} onFiltersChange={handleFiltersChange} />
+        <Filters
+          filters={tableState.filters}
+          onFiltersChange={handleFiltersChange}
+        />
         <EmptyState onReset={handleResetFilters} />
       </>
     );
@@ -175,19 +182,22 @@ export default function DataTableClient({ initialData }: DataTableClientProps) {
 
   return (
     <>
-      <Filters filters={filters} onFiltersChange={handleFiltersChange} />
+      <Filters
+        filters={tableState.filters}
+        onFiltersChange={handleFiltersChange}
+      />
 
       <div className="bg-white shadow-sm rounded-lg border border-gray-200">
         <Table
           rows={paginatedData}
-          sortField={sortField}
-          sortDirection={sortDirection}
+          sortField={tableState.sort.field}
+          sortDirection={tableState.sort.direction}
           onSort={handleSort}
         />
       </div>
 
       <Pagination
-        pagination={pagination}
+        pagination={tableState.pagination}
         totalItems={filteredData.length}
         onPaginationChange={handlePaginationChange}
       />
