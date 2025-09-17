@@ -39,7 +39,7 @@ export default function Pagination({
           <select
             value={pagination.pageSize}
             onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-            className="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 pr-8 text-green-700 font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer"
+            className="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 pr-6 text-green-700 font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer"
           >
             {PAGE_SIZE_OPTIONS.map((size) => (
               <option key={size} value={size}>
@@ -80,11 +80,11 @@ export default function Pagination({
 
       {/* Page navigation */}
       <div className="flex items-center gap-2">
-        <span className="text-sm text-green-700 font-medium">
+        <span className="text-sm font-semibold text-[#546661]">
           Page {pagination.page} of {totalPages}
         </span>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           {/* First page button */}
           <button
             onClick={() => handlePageChange(1)}
