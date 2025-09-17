@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Status, FilterState } from '@/types/table';
+import { Status, PmsSyncStatus, FilterState } from '@/types/table';
 
 interface FiltersProps {
   filters: FilterState;

@@ -8,13 +8,8 @@ faker.seed(12345);
 const STATUSES: Status[] = ['REJECTED', 'PENDING', 'CALL', 'RESUBMITTED'];
 const STATUS_WEIGHTS = [0.15, 0.35, 0.25, 0.25]; // Weighted distribution
 
-const PMS_SYNC_STATUSES: PmsSyncStatus[] = [
-  'SYNCED',
-  'PENDING',
-  'FAILED',
-  'NOT_SYNCED',
-];
-const PMS_SYNC_WEIGHTS = [0.6, 0.2, 0.1, 0.1]; // Weighted distribution
+const PMS_SYNC_STATUSES: PmsSyncStatus[] = ['SYNCED', 'NOT_SYNCED'];
+const PMS_SYNC_WEIGHTS = [0.7, 0.3]; // 70% synced, 30% not synced
 
 const INSURANCE_TYPES = ['Primary', 'Secondary'] as const;
 const INSURANCE_TYPE_WEIGHTS = [0.7, 0.3]; // 70% Primary, 30% Secondary
@@ -160,10 +155,6 @@ function generateTableRow(id: number): TableRow {
     switch (status) {
       case 'NOT_SYNCED':
         return 'Status modified today';
-      case 'PENDING':
-        return 'Sync in progress';
-      case 'FAILED':
-        return 'Sync failed - retry needed';
       case 'SYNCED':
         return 'Successfully synced';
       default:
@@ -197,6 +188,9 @@ function generateTableRow(id: number): TableRow {
 let cachedData: TableRow[] | null = null;
 
 export function getTableData(): TableRow[] {
+  // Clear cached data to regenerate with new PMS sync statuses
+  cachedData = null;
+
   // Return cached data if already generated
   if (cachedData) {
     return cachedData;

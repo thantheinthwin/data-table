@@ -1,5 +1,5 @@
 export type Status = 'REJECTED' | 'PENDING' | 'CALL' | 'RESUBMITTED';
-export type PmsSyncStatus = 'SYNCED' | 'PENDING' | 'FAILED' | 'NOT_SYNCED';
+export type PmsSyncStatus = 'NOT_SYNCED' | 'SYNCED';
 
 export interface TableRow {
   id: string;
