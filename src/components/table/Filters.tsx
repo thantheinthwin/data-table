@@ -30,9 +30,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
     }, 300);
   };
 
-  const handleNameSearchChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleNameSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNameSearchValue(value);
     debouncedUpdateFilters('patient', value);

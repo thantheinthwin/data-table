@@ -84,8 +84,8 @@ const PMS_SYNC_STATUS_COLORS = {
 };
 
 const INSURANCE_TYPE_COLORS = {
-  Primary: 'bg-blue-100 text-blue-800',
-  Secondary: 'bg-orange-100 text-orange-800',
+  Primary: 'bg-[#EBF9FE] text-[#23A9EB]',
+  Secondary: 'bg-[#FCF8CA] text-[#E98E34]',
 };
 
 export default function Table({
@@ -206,7 +206,7 @@ export default function Table({
           {rows.map((row) => (
             <tr key={row.id} className="hover:bg-gray-50 transition-colors">
               {/* Patient */}
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-6 py-4 whitespace-nowrap space-y-1">
                 <div className="text-sm font-medium text-gray-900">
                   {row.patient}
                 </div>
@@ -219,17 +219,19 @@ export default function Table({
               </td>
 
               {/* Insurance Carrier */}
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">
-                  {row.insuranceCarrier}
+              <td className="px-6 py-4 whitespace-nowrap space-y-2">
+                <div>
+                  <div className="text-sm text-gray-900">
+                    {row.insuranceCarrier}
+                  </div>
+                  <div className="text-sm text-gray-900">
+                    {row.insurancePlan}
+                  </div>
                 </div>
-                <div className="text-sm text-gray-500">{row.insurancePlan}</div>
-                <div className="mt-1">
-                  <span
-                    className={`inline-flex px-2 py-1 text-sm font-medium rounded-full ${INSURANCE_TYPE_COLORS[row.insuranceType]}`}
-                  >
-                    {row.insuranceType}
-                  </span>
+                <div
+                  className={`mt-1 px-2 py-1 text-sm font-semibold rounded text-center ${INSURANCE_TYPE_COLORS[row.insuranceType]}`}
+                >
+                  {row.insuranceType}
                 </div>
               </td>
 
@@ -244,7 +246,7 @@ export default function Table({
               </td>
 
               {/* Last Updated */}
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-6 py-4 whitespace-nowrap space-y-2">
                 <div className="text-sm text-gray-900">
                   {formatDate(row.lastUpdated)}
                 </div>
@@ -345,7 +347,7 @@ export default function Table({
               </td>
 
               {/* Provider */}
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-6 py-4 whitespace-nowrap space-y-1">
                 <div className="text-sm font-medium text-gray-900">
                   {row.provider}
                 </div>
