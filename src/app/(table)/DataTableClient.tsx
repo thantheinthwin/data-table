@@ -248,14 +248,12 @@ export default function DataTableClient() {
         onFiltersChange={handleFiltersChange}
       />
 
-      <div className="bg-white shadow-sm rounded-lg border border-gray-200">
         <Table
           rows={paginatedData}
           sortField={tableState.sort.field}
           sortDirection={tableState.sort.direction}
           onSort={handleSort}
         />
-      </div>
 
       <Pagination
         pagination={tableState.pagination}

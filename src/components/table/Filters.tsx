@@ -2,6 +2,14 @@
 
 import { useState, useRef } from 'react';
 import { Status, FilterState } from '@/types/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import { Input } from '../ui/input';
 
 interface FiltersProps {
   filters: FilterState;
@@ -50,13 +58,13 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
           >
             Search by Name
           </label>
-          <input
+          <Input
             id="name-search"
             type="text"
             value={nameSearchValue}
             onChange={handleNameSearchChange}
             placeholder="Enter name to search..."
-            className="w-full px-3 py-2 border text-gray-700 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="text-gray-700 border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:border-green-500"
           />
         </div>
 
@@ -67,20 +75,23 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
           >
             Status
           </label>
-          <select
-            id="status"
+          <Select
             value={filters.status}
-            onChange={(e) =>
-              handleStatusChange(e.target.value as Status | 'ALL')
+            onValueChange={(value) =>
+              handleStatusChange(value as Status | 'ALL')
             }
-            className="w-full px-3 py-2 border text-gray-700 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            {STATUS_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="h-10 border border-gray-300 rounded-lg font-medium focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>
