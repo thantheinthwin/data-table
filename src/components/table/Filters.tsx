@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Status, FilterState } from '@/types/table';
 
 interface FiltersProps {
@@ -18,15 +18,23 @@ const STATUS_OPTIONS: Array<{ value: Status | 'ALL'; label: string }> = [
 
 export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   const [searchValue, setSearchValue] = useState(filters.name);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounce search input
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onFiltersChange({ ...filters, name: searchValue });
+  const debouncedUpdateFilters = (value: string) => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      onFiltersChange({ ...filters, name: value });
     }, 300);
+  };
 
-    return () => clearTimeout(timer);
-  }, [searchValue, filters, onFiltersChange]);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    debouncedUpdateFilters(value);
+  };
 
   const handleStatusChange = (status: Status | 'ALL') => {
     onFiltersChange({ ...filters, status });
@@ -45,7 +53,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
           id="search"
           type="text"
           value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
+          onChange={handleSearchChange}
           placeholder="Enter name to search..."
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
