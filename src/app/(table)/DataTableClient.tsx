@@ -182,10 +182,16 @@ export default function DataTableClient() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <Spinner size="lg" />
-        <p className="mt-4 text-gray-600">Loading table data...</p>
-      </div>
+      <>
+        <Filters
+          filters={tableState.filters}
+          onFiltersChange={handleFiltersChange}
+        />
+        <div className="flex flex-col items-center justify-center py-12">
+          <Spinner size="lg" />
+          <p className="mt-4 text-gray-600">Loading table data...</p>
+        </div>
+      </>
     );
   }
 
@@ -248,12 +254,12 @@ export default function DataTableClient() {
         onFiltersChange={handleFiltersChange}
       />
 
-        <Table
-          rows={paginatedData}
-          sortField={tableState.sort.field}
-          sortDirection={tableState.sort.direction}
-          onSort={handleSort}
-        />
+      <Table
+        rows={paginatedData}
+        sortField={tableState.sort.field}
+        sortDirection={tableState.sort.direction}
+        onSort={handleSort}
+      />
 
       <Pagination
         pagination={tableState.pagination}

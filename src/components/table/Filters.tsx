@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Status, FilterState } from '@/types/table';
 import {
   Select,
@@ -27,6 +27,11 @@ const STATUS_OPTIONS: Array<{ value: Status | 'ALL'; label: string }> = [
 export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   const [nameSearchValue, setNameSearchValue] = useState(filters.patient);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync local state with filters prop changes (e.g., when reset is called)
+  useEffect(() => {
+    setNameSearchValue(filters.patient);
+  }, [filters.patient]);
 
   const debouncedUpdateFilters = (field: keyof FilterState, value: string) => {
     if (debounceTimeoutRef.current) {
