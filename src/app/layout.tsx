@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { JetBrains_Mono } from 'next/font/google';
+import { Open_Sans } from 'next/font/google';
 import './globals.css';
 import QueryProvider from '@/components/providers/QueryProvider';
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: '--font-jetbrains-mono',
+const openSans = Open_Sans({
+  variable: '--font-open-sans',
   subsets: ['latin'],
 });
 
@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${jetbrainsMono.variable} antialiased`}>
+      <body className={`${openSans.variable} antialiased`}>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

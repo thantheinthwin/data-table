@@ -102,7 +102,7 @@ export default function Table({
           <tr>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('patient')}
             >
               <div className="flex items-center gap-2">
@@ -116,7 +116,7 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('serviceDate')}
             >
               <div className="flex items-center gap-2">
@@ -130,7 +130,7 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('insuranceCarrier')}
             >
               <div className="flex items-center gap-2">
@@ -144,7 +144,7 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('amount')}
             >
               <div className="flex items-center gap-2">
@@ -158,7 +158,7 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('status')}
             >
               <div className="flex items-center gap-2">
@@ -172,7 +172,7 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('lastUpdated')}
             >
               <div className="flex items-center gap-2">
@@ -186,7 +186,7 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('user')}
             >
               <div className="flex items-center gap-2">
@@ -200,7 +200,7 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('dateSent')}
             >
               <div className="flex items-center gap-2">
@@ -214,7 +214,7 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('dateSentOrig')}
             >
               <div className="flex items-center gap-2">
@@ -231,7 +231,7 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('pmsSyncStatus')}
             >
               <div className="flex items-center gap-2">
@@ -245,7 +245,7 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('provider')}
             >
               <div className="flex items-center gap-2">
@@ -283,7 +283,7 @@ export default function Table({
                 <div className="text-sm text-gray-500">{row.insurancePlan}</div>
                 <div className="mt-1">
                   <span
-                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${INSURANCE_TYPE_COLORS[row.insuranceType]}`}
+                    className={`inline-flex px-2 py-1 text-sm font-medium rounded-full ${INSURANCE_TYPE_COLORS[row.insuranceType]}`}
                   >
                     {row.insuranceType}
                   </span>
@@ -336,7 +336,7 @@ export default function Table({
                 <div className="flex flex-col">
                   <div className="flex items-center">
                     <span
-                      className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${PMS_SYNC_STATUS_COLORS[row.pmsSyncStatus]}`}
+                      className={`inline-flex items-center px-2 py-1 text-sm font-medium rounded-full ${PMS_SYNC_STATUS_COLORS[row.pmsSyncStatus]}`}
                     >
                       {row.pmsSyncStatus === 'NOT_SYNCED' && (
                         <svg
@@ -395,7 +395,7 @@ export default function Table({
                         : row.pmsSyncStatus}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-sm text-gray-500 mt-1">
                     {row.pmsSyncMessage}
                   </div>
                 </div>
