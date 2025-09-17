@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Status, PmsSyncStatus, FilterState } from '@/types/table';
+import { Status, FilterState } from '@/types/table';
 
 interface FiltersProps {
   filters: FilterState;
@@ -56,7 +56,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
             value={nameSearchValue}
             onChange={handleNameSearchChange}
             placeholder="Enter name to search..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border text-gray-700 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
@@ -73,7 +73,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
             onChange={(e) =>
               handleStatusChange(e.target.value as Status | 'ALL')
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border text-gray-700 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             {STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
