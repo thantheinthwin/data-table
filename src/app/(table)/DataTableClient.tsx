@@ -27,11 +27,9 @@ function getUrlState(searchParams: URLSearchParams): TableState {
     filters: {
       patient: searchParams.get('patient') || '',
       status: (searchParams.get('status') as FilterState['status']) || 'ALL',
-      insuranceCarrier: searchParams.get('insuranceCarrier') || '',
-      pmsSyncStatus:
-        (searchParams.get('pmsSyncStatus') as FilterState['pmsSyncStatus']) ||
-        'ALL',
-      provider: searchParams.get('provider') || '',
+      insuranceCarrier: '',
+      pmsSyncStatus: 'ALL',
+      provider: '',
     },
     pagination: {
       page: parseInt(searchParams.get('page') || '1', 10),
@@ -58,18 +56,6 @@ function updateUrl(
 
   if (state.filters.status !== 'ALL') {
     params.set('status', state.filters.status);
-  }
-
-  if (state.filters.insuranceCarrier) {
-    params.set('insuranceCarrier', state.filters.insuranceCarrier);
-  }
-
-  if (state.filters.pmsSyncStatus !== 'ALL') {
-    params.set('pmsSyncStatus', state.filters.pmsSyncStatus);
-  }
-
-  if (state.filters.provider) {
-    params.set('provider', state.filters.provider);
   }
 
   if (state.pagination.page > 1) {
@@ -114,29 +100,14 @@ export default function DataTableClient() {
   const filteredData = useMemo(() => {
     if (!tableData) return [];
     return tableData.filter((row) => {
-      const matchesPatient = row.patient
+      const matchesName = row.patient
         .toLowerCase()
         .includes(tableState.filters.patient.toLowerCase());
       const matchesStatus =
         tableState.filters.status === 'ALL' ||
         row.status === tableState.filters.status;
-      const matchesInsuranceCarrier = row.insuranceCarrier
-        .toLowerCase()
-        .includes(tableState.filters.insuranceCarrier.toLowerCase());
-      const matchesPmsSyncStatus =
-        tableState.filters.pmsSyncStatus === 'ALL' ||
-        row.pmsSyncStatus === tableState.filters.pmsSyncStatus;
-      const matchesProvider = row.provider
-        .toLowerCase()
-        .includes(tableState.filters.provider.toLowerCase());
 
-      return (
-        matchesPatient &&
-        matchesStatus &&
-        matchesInsuranceCarrier &&
-        matchesPmsSyncStatus &&
-        matchesProvider
-      );
+      return matchesName && matchesStatus;
     });
   }, [tableData, tableState.filters]);
 

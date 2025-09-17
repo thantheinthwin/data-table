@@ -10,19 +10,6 @@ interface TableProps {
   onSort: (field: SortField) => void;
 }
 
-const PMS_SYNC_STATUS_COLORS = {
-  SYNCED: 'bg-green-100 text-green-800',
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  FAILED: 'bg-red-100 text-red-800',
-  NOT_SYNCED: 'bg-gray-100 text-gray-800',
-};
-
-const INSURANCE_TYPE_COLORS = {
-  Primary: 'bg-blue-100 text-blue-800',
-  Secondary: 'bg-orange-100 text-orange-800',
-  Tertiary: 'bg-purple-100 text-purple-800',
-};
-
 function SortIcon({
   field,
   sortField,
@@ -89,6 +76,18 @@ function SortIcon({
   return null;
 }
 
+const PMS_SYNC_STATUS_COLORS = {
+  SYNCED: 'bg-green-100 text-green-800',
+  PENDING: 'bg-yellow-100 text-yellow-800',
+  FAILED: 'bg-red-100 text-red-800',
+  NOT_SYNCED: 'bg-gray-100 text-gray-800',
+};
+
+const INSURANCE_TYPE_COLORS = {
+  Primary: 'bg-blue-100 text-blue-800',
+  Secondary: 'bg-orange-100 text-orange-800',
+};
+
 export default function Table({
   rows,
   sortField,
@@ -130,31 +129,15 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('insuranceCarrier')}
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
             >
-              <div className="flex items-center gap-2">
-                Insurance Carrier
-                <SortIcon
-                  field="insuranceCarrier"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
+              Insurance Carrier
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('amount')}
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
             >
-              <div className="flex items-center gap-2">
-                Amount
-                <SortIcon
-                  field="amount"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
+              Amount
             </th>
             <th
               scope="col"
@@ -186,76 +169,36 @@ export default function Table({
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('user')}
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
             >
-              <div className="flex items-center gap-2">
-                User
-                <SortIcon
-                  field="user"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
+              User
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
+            >
+              Date Sent
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
+            >
+              <div className="text-center">
+                <div>Date Sent</div>
+                <div>Orig</div>
               </div>
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('dateSent')}
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
             >
-              <div className="flex items-center gap-2">
-                Date Sent
-                <SortIcon
-                  field="dateSent"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
+              PMS Sync Status
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('dateSentOrig')}
+              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
             >
-              <div className="flex items-center gap-2">
-                <div className="text-center">
-                  <div>Date Sent</div>
-                  <div>Orig</div>
-                </div>
-                <SortIcon
-                  field="dateSentOrig"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('pmsSyncStatus')}
-            >
-              <div className="flex items-center gap-2">
-                PMS Sync Status
-                <SortIcon
-                  field="pmsSyncStatus"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('provider')}
-            >
-              <div className="flex items-center gap-2">
-                Provider
-                <SortIcon
-                  field="provider"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
+              Provider
             </th>
           </tr>
         </thead>

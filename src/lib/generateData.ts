@@ -16,6 +16,9 @@ const PMS_SYNC_STATUSES: PmsSyncStatus[] = [
 ];
 const PMS_SYNC_WEIGHTS = [0.6, 0.2, 0.1, 0.1]; // Weighted distribution
 
+const INSURANCE_TYPES = ['Primary', 'Secondary'] as const;
+const INSURANCE_TYPE_WEIGHTS = [0.7, 0.3]; // 70% Primary, 30% Secondary
+
 const INSURANCE_CARRIERS = [
   'BCBS OF COLORADO',
   'Aetna',
@@ -91,6 +94,20 @@ function getWeightedPmsSyncStatus(): PmsSyncStatus {
   return PMS_SYNC_STATUSES[0]; // fallback
 }
 
+function getWeightedInsuranceType(): 'Primary' | 'Secondary' {
+  const random = Math.random();
+  let cumulative = 0;
+
+  for (let i = 0; i < INSURANCE_TYPES.length; i++) {
+    cumulative += INSURANCE_TYPE_WEIGHTS[i];
+    if (random <= cumulative) {
+      return INSURANCE_TYPES[i];
+    }
+  }
+
+  return INSURANCE_TYPES[0]; // fallback
+}
+
 function generateTableRow(id: number): TableRow {
   // Generate service date within the last 18 months
   const serviceDate = faker.date.between({
@@ -126,11 +143,7 @@ function generateTableRow(id: number): TableRow {
   const user = faker.helpers.arrayElement(USERS);
   const insuranceCarrier = faker.helpers.arrayElement(INSURANCE_CARRIERS);
   const insurancePlan = faker.helpers.arrayElement(INSURANCE_PLANS);
-  const insuranceType = faker.helpers.arrayElement([
-    'Primary',
-    'Secondary',
-    'Tertiary',
-  ] as const);
+  const insuranceType = getWeightedInsuranceType();
   const pmsSyncStatus = getWeightedPmsSyncStatus();
 
   // Generate initials from names

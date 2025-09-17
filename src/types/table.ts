@@ -8,7 +8,7 @@ export interface TableRow {
   serviceDate: string; // ISO date
   insuranceCarrier: string;
   insurancePlan: string;
-  insuranceType: 'Primary' | 'Secondary' | 'Tertiary';
+  insuranceType: 'Primary' | 'Secondary';
   amount: number;
   status: Status;
   lastUpdated: string; // ISO date
@@ -23,7 +23,7 @@ export interface TableRow {
   providerId: string;
 }
 
-export type SortField = 'patient' | 'serviceDate' | 'insuranceCarrier' | 'amount' | 'status' | 'lastUpdated' | 'user' | 'dateSent' | 'dateSentOrig' | 'pmsSyncStatus' | 'provider';
+export type SortField = 'patient' | 'status' | 'serviceDate' | 'lastUpdated';
 export type SortDirection = 'asc' | 'desc' | null;
 
 export interface SortState {
