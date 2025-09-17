@@ -65,7 +65,7 @@ export default function Pagination({
 
   return (
     <div
-      className={`flex items-center justify-between mt-6 pt-4 border-t border-gray-200 flex-wrap ${className}`}
+      className={`flex items-center justify-between mt-6 pt-4 border-t border-gray-200 flex-wrap space-y-2 ${className}`}
     >
       {/* Rows per page selector */}
       {showPageSizeSelector && (
