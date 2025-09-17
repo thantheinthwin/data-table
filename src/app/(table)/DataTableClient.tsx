@@ -8,9 +8,11 @@ import {
   FilterState,
   PaginationState,
   TableState,
+  TableRow,
 } from '@/types/table';
 import { sortTableRows, getNextSortDirection } from '@/lib/sort';
 import { useTableData } from '@/lib/api/tableData';
+import { tableColumns, filterConfigs } from '@/lib/table/columnConfig';
 import Filters from '@/components/table/Filters';
 import Table from '@/components/table/Table';
 import Pagination from '@/components/table/Pagination';
@@ -18,7 +20,9 @@ import EmptyState from '@/components/EmptyState';
 import Spinner from '@/components/ui/Spinner';
 
 // Utility functions for URL state management
-function getUrlState(searchParams: URLSearchParams): TableState {
+function getUrlState(
+  searchParams: URLSearchParams
+): TableState<SortField, FilterState> {
   return {
     sort: {
       field: (searchParams.get('sort') as SortField) || null,
@@ -41,7 +45,7 @@ function getUrlState(searchParams: URLSearchParams): TableState {
 function updateUrl(
   router: ReturnType<typeof useRouter>,
   pathname: string,
-  state: TableState
+  state: TableState<SortField, FilterState>
 ) {
   const params = new URLSearchParams();
 
@@ -82,11 +86,12 @@ export default function DataTableClient() {
 
   // Initialize state from URL parameters
   const urlState = getUrlState(searchParams);
-  const [tableState, setTableState] = useState<TableState>(urlState);
+  const [tableState, setTableState] =
+    useState<TableState<SortField, FilterState>>(urlState);
 
   // Helper function to update state and URL atomically
   const updateTableState = useCallback(
-    (updates: Partial<TableState>) => {
+    (updates: Partial<TableState<SortField, FilterState>>) => {
       setTableState((prevState) => {
         const newState = { ...prevState, ...updates };
         updateUrl(router, pathname, newState);
@@ -183,8 +188,9 @@ export default function DataTableClient() {
   if (isLoading) {
     return (
       <>
-        <Filters
+        <Filters<FilterState>
           filters={tableState.filters}
+          filterConfigs={filterConfigs}
           onFiltersChange={handleFiltersChange}
         />
         <div className="flex flex-col items-center justify-center py-12">
@@ -238,8 +244,9 @@ export default function DataTableClient() {
   if (filteredData.length === 0) {
     return (
       <>
-        <Filters
+        <Filters<FilterState>
           filters={tableState.filters}
+          filterConfigs={filterConfigs}
           onFiltersChange={handleFiltersChange}
         />
         <EmptyState onReset={handleResetFilters} />
@@ -249,13 +256,15 @@ export default function DataTableClient() {
 
   return (
     <>
-      <Filters
+      <Filters<FilterState>
         filters={tableState.filters}
+        filterConfigs={filterConfigs}
         onFiltersChange={handleFiltersChange}
       />
 
-      <Table
+      <Table<TableRow, SortField>
         rows={paginatedData}
+        columns={tableColumns}
         sortField={tableState.sort.field}
         sortDirection={tableState.sort.direction}
         onSort={handleSort}

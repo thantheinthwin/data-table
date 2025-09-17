@@ -1,23 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { TableRow, SortField, SortDirection } from '@/types/table';
-import { formatDate, formatCurrency, formatTime } from '@/lib/generateData';
-import { CircleAlert, CheckCircle } from 'lucide-react';
+import React from 'react';
+import { ColumnConfig, SortDirection } from '@/types/table';
 
-interface TableProps {
-  rows: TableRow[];
-  sortField: SortField | null;
+interface TableProps<T = Record<string, any>, S = keyof T> {
+  rows: T[];
+  columns: ColumnConfig<T>[];
+  sortField: S | null;
   sortDirection: SortDirection;
-  onSort: (field: SortField) => void;
+  onSort: (field: S) => void;
+  className?: string;
 }
 
-function SortIcon({
+function SortIcon<T, S = keyof T>({
   field,
   sortField,
   sortDirection,
 }: {
-  field: SortField;
-  sortField: SortField | null;
+  field: S;
+  sortField: S | null;
   sortDirection: SortDirection;
 }) {
   if (sortField !== field) {
@@ -77,234 +79,66 @@ function SortIcon({
   return null;
 }
 
-const PMS_SYNC_STATUS_COLORS = {
-  SYNCED: 'bg-green-100 text-green-800',
-  NOT_SYNCED: 'bg-gray-100 text-gray-800',
-};
-
-const INSURANCE_TYPE_COLORS = {
-  Primary: 'bg-[#EBF9FE] text-[#23A9EB]',
-  Secondary: 'bg-[#FCF8CA] text-[#E98E34]',
-};
-
-export default function Table({
+export default function Table<T extends Record<string, any>, S = keyof T>({
   rows,
+  columns,
   sortField,
   sortDirection,
   onSort,
-}: TableProps) {
+  className = '',
+}: TableProps<T, S>) {
   return (
-    <div className="overflow-x-auto rounded-lg shadow border border-border">
+    <div
+      className={`overflow-x-auto rounded-lg shadow border border-border ${className}`}
+    >
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('patient')}
-            >
-              <div className="flex items-center gap-2">
-                Patient
-                <SortIcon
-                  field="patient"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('serviceDate')}
-            >
-              <div className="flex items-center gap-2">
-                Service Date
-                <SortIcon
-                  field="serviceDate"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
-            >
-              Insurance Carrier
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
-            >
-              Amount
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('status')}
-            >
-              <div className="flex items-center gap-2">
-                Status
-                <SortIcon
-                  field="status"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('lastUpdated')}
-            >
-              <div className="flex items-center gap-2">
-                Last Updated
-                <SortIcon
-                  field="lastUpdated"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
-            >
-              User
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
-            >
-              Date Sent
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
-            >
-              <div className="text-center">
-                <div>Date Sent</div>
-                <div>Orig</div>
-              </div>
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
-            >
-              PMS Sync Status
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider"
-            >
-              Provider
-            </th>
+            {columns.map((column) => (
+              <th
+                key={String(column.key)}
+                scope="col"
+                className={`px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider ${
+                  column.sortable
+                    ? 'cursor-pointer hover:bg-gray-100 transition-colors'
+                    : ''
+                } ${column.headerClassName || ''}`}
+                onClick={
+                  column.sortable ? () => onSort(column.key as S) : undefined
+                }
+              >
+                <div className="flex items-center gap-2">
+                  {typeof column.label === 'string'
+                    ? column.label
+                    : column.label}
+                  {column.sortable && (
+                    <SortIcon
+                      field={column.key as S}
+                      sortField={sortField}
+                      sortDirection={sortDirection}
+                    />
+                  )}
+                </div>
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {rows.map((row) => (
-            <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-              {/* Patient */}
-              <td className="px-6 py-4 whitespace-nowrap space-y-1">
-                <div className="text-sm font-medium text-gray-900">
-                  {row.patient}
-                </div>
-                <div className="text-sm text-gray-500">ID: {row.patientId}</div>
-              </td>
-
-              {/* Service Date */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {formatDate(row.serviceDate)}
-              </td>
-
-              {/* Insurance Carrier */}
-              <td className="px-6 py-4 whitespace-nowrap space-y-2">
-                <div>
-                  <div className="text-sm text-gray-900">
-                    {row.insuranceCarrier}
-                  </div>
-                  <div className="text-sm text-gray-900">
-                    {row.insurancePlan}
-                  </div>
-                </div>
-                <div
-                  className={`mt-1 px-2 py-1 text-sm font-semibold rounded text-center ${INSURANCE_TYPE_COLORS[row.insuranceType]}`}
+          {rows.map((row, index) => (
+            <tr
+              key={(row as any).id || index}
+              className="hover:bg-gray-50 transition-colors"
+            >
+              {columns.map((column) => (
+                <td
+                  key={String(column.key)}
+                  className={`px-6 py-4 whitespace-nowrap ${column.className || ''}`}
                 >
-                  {row.insuranceType}
-                </div>
-              </td>
-
-              {/* Amount */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {formatCurrency(row.amount)}
-              </td>
-
-              {/* Status */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                NCOF - {row.status}
-              </td>
-
-              {/* Last Updated */}
-              <td className="px-6 py-4 whitespace-nowrap space-y-2">
-                <div className="text-sm text-gray-900">
-                  {formatDate(row.lastUpdated)}
-                </div>
-                <div className="text-sm font-semibold text-gray-500">
-                  {formatTime(row.lastUpdatedTime)}
-                </div>
-              </td>
-
-              {/* User */}
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-green-800">
-                      {row.userInitials}
-                    </span>
-                  </div>
-                </div>
-              </td>
-
-              {/* Date Sent */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {formatDate(row.dateSent)}
-              </td>
-
-              {/* Date Sent Orig */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {formatDate(row.dateSentOrig)}
-              </td>
-
-              {/* PMS Sync Status */}
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex flex-col">
-                  <div
-                    className={`flex gap-1.5 items-center px-2 py-1 text-sm font-semibold justify-center rounded ${PMS_SYNC_STATUS_COLORS[row.pmsSyncStatus]}`}
-                  >
-                    {row.pmsSyncStatus === 'NOT_SYNCED' && (
-                      <CircleAlert className="w-4 h-4" />
-                    )}
-                    {row.pmsSyncStatus === 'SYNCED' && (
-                      <CheckCircle className="w-4 h-4" />
-                    )}
-                    {row.pmsSyncStatus === 'NOT_SYNCED'
-                      ? 'Not synced'
-                      : 'Synced'}
-                  </div>
-
-                  <div className="text-sm text-gray-500 mt-1">
-                    {row.pmsSyncMessage}
-                  </div>
-                </div>
-              </td>
-
-              {/* Provider */}
-              <td className="px-6 py-4 whitespace-nowrap space-y-1">
-                <div className="text-sm text-gray-900">{row.provider}</div>
-                <div className="text-sm font-semibold text-gray-500">
-                  ID: {row.providerId}
-                </div>
-              </td>
+                  {column.render
+                    ? column.render(row[column.key], row)
+                    : String(row[column.key] || '')}
+                </td>
+              ))}
             </tr>
           ))}
         </tbody>

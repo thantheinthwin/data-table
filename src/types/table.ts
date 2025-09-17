@@ -23,20 +23,12 @@ export interface TableRow {
   providerId: string;
 }
 
-export type SortField = 'patient' | 'status' | 'serviceDate' | 'lastUpdated';
+// Generic table types
 export type SortDirection = 'asc' | 'desc' | null;
 
-export interface SortState {
-  field: SortField | null;
+export interface SortState<T = string> {
+  field: T | null;
   direction: SortDirection;
-}
-
-export interface FilterState {
-  patient: string;
-  status: Status | 'ALL';
-  insuranceCarrier: string;
-  pmsSyncStatus: PmsSyncStatus | 'ALL';
-  provider: string;
 }
 
 export interface PaginationState {
@@ -44,8 +36,38 @@ export interface PaginationState {
   pageSize: number;
 }
 
-export interface TableState {
-  sort: SortState;
-  filters: FilterState;
+export interface TableState<T = string, F = Record<string, unknown>> {
+  sort: SortState<T>;
+  filters: F;
   pagination: PaginationState;
+}
+
+// Column configuration types
+export interface ColumnConfig<T = Record<string, unknown>> {
+  key: keyof T;
+  label: string;
+  sortable?: boolean;
+  render?: (value: T[keyof T], row: T) => React.ReactNode;
+  className?: string;
+  headerClassName?: string;
+}
+
+export interface FilterConfig<T = Record<string, unknown>> {
+  key: keyof T;
+  label: string;
+  type: 'text' | 'select' | 'date' | 'number';
+  options?: Array<{ value: unknown; label: string }>;
+  placeholder?: string;
+  debounceMs?: number;
+}
+
+// Legacy types for backward compatibility
+export type SortField = 'patient' | 'status' | 'serviceDate' | 'lastUpdated';
+
+export interface FilterState {
+  patient: string;
+  status: Status | 'ALL';
+  insuranceCarrier: string;
+  pmsSyncStatus: PmsSyncStatus | 'ALL';
+  provider: string;
 }

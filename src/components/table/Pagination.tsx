@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { PaginationState } from '@/types/table';
 import {
   Select,
@@ -13,14 +14,22 @@ interface PaginationProps {
   pagination: PaginationState;
   totalItems: number;
   onPaginationChange: (pagination: PaginationState) => void;
+  pageSizeOptions?: number[];
+  showPageSizeSelector?: boolean;
+  showPageInfo?: boolean;
+  className?: string;
 }
 
-const PAGE_SIZE_OPTIONS = [10, 20, 25, 50];
+const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 25, 50];
 
 export default function Pagination({
   pagination,
   totalItems,
   onPaginationChange,
+  pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
+  showPageSizeSelector = true,
+  showPageInfo = true,
+  className = '',
 }: PaginationProps) {
   const totalPages = Math.ceil(totalItems / pagination.pageSize);
 
@@ -38,42 +47,62 @@ export default function Pagination({
     return null;
   }
 
+  const renderNavigationButton = (
+    onClick: () => void,
+    disabled: boolean,
+    title: string,
+    icon: React.ReactNode
+  ) => (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500"
+      title={title}
+    >
+      {icon}
+    </button>
+  );
+
   return (
-    <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+    <div
+      className={`flex items-center justify-between mt-6 pt-4 border-t border-gray-200 flex-wrap ${className}`}
+    >
       {/* Rows per page selector */}
-      <div className="flex items-center gap-2">
-        <Select
-          value={pagination.pageSize.toString()}
-          onValueChange={(value) => handlePageSizeChange(Number(value))}
-        >
-          <SelectTrigger className="w-20 h-10 border border-gray-300 rounded-lg text-[#1A6444] font-medium focus:ring-2 focus:ring-green-500 focus:border-green-500">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {PAGE_SIZE_OPTIONS.map((size) => (
-              <SelectItem key={size} value={size.toString()}>
-                {size}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <span className="text-sm text-gray-500">Rows per page</span>
-      </div>
+      {showPageSizeSelector && (
+        <div className="flex items-center gap-2">
+          <Select
+            value={pagination.pageSize.toString()}
+            onValueChange={(value) => handlePageSizeChange(Number(value))}
+          >
+            <SelectTrigger className="w-20 h-10 border border-gray-300 rounded-lg text-[#1A6444] font-medium focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {pageSizeOptions.map((size) => (
+                <SelectItem key={size} value={size.toString()}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <span className="text-sm text-gray-500">Rows per page</span>
+        </div>
+      )}
 
       {/* Page navigation */}
       <div className="flex items-center gap-2">
-        <span className="text-sm font-semibold text-[#546661]">
-          Page {pagination.page} of {totalPages}
-        </span>
+        {showPageInfo && (
+          <span className="text-sm font-semibold text-[#546661]">
+            Page {pagination.page} of {totalPages}
+          </span>
+        )}
 
         <div className="flex items-center gap-2">
           {/* First page button */}
-          <button
-            onClick={() => handlePageChange(1)}
-            disabled={pagination.page === 1}
-            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500"
-            title="First page"
-          >
+          {renderNavigationButton(
+            () => handlePageChange(1),
+            pagination.page === 1,
+            'First page',
             <svg
               className="w-4 h-4 text-[#1A6444]"
               fill="currentColor"
@@ -85,15 +114,13 @@ export default function Pagination({
                 clipRule="evenodd"
               />
             </svg>
-          </button>
+          )}
 
           {/* Previous page button */}
-          <button
-            onClick={() => handlePageChange(pagination.page - 1)}
-            disabled={pagination.page === 1}
-            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500"
-            title="Previous page"
-          >
+          {renderNavigationButton(
+            () => handlePageChange(pagination.page - 1),
+            pagination.page === 1,
+            'Previous page',
             <svg
               className="w-4 h-4 text-[#1A6444]"
               fill="currentColor"
@@ -105,15 +132,13 @@ export default function Pagination({
                 clipRule="evenodd"
               />
             </svg>
-          </button>
+          )}
 
           {/* Next page button */}
-          <button
-            onClick={() => handlePageChange(pagination.page + 1)}
-            disabled={pagination.page === totalPages}
-            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500"
-            title="Next page"
-          >
+          {renderNavigationButton(
+            () => handlePageChange(pagination.page + 1),
+            pagination.page === totalPages,
+            'Next page',
             <svg
               className="w-4 h-4 text-[#1A6444]"
               fill="currentColor"
@@ -125,15 +150,13 @@ export default function Pagination({
                 clipRule="evenodd"
               />
             </svg>
-          </button>
+          )}
 
           {/* Last page button */}
-          <button
-            onClick={() => handlePageChange(totalPages)}
-            disabled={pagination.page === totalPages}
-            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500"
-            title="Last page"
-          >
+          {renderNavigationButton(
+            () => handlePageChange(totalPages),
+            pagination.page === totalPages,
+            'Last page',
             <svg
               className="w-4 h-4 text-[#1A6444]"
               fill="currentColor"
@@ -145,7 +168,7 @@ export default function Pagination({
                 clipRule="evenodd"
               />
             </svg>
-          </button>
+          )}
         </div>
       </div>
     </div>
