@@ -1,12 +1,9 @@
 import { Suspense } from 'react';
-import { getTableData } from '@/lib/generateData';
 import PageShell from '@/components/layout/PageShell';
 import DataTableClient from './(table)/DataTableClient';
 import Spinner from '@/components/ui/Spinner';
 
 export default function Home() {
-  const data = getTableData();
-
   return (
     <PageShell>
       <Suspense
@@ -16,7 +13,7 @@ export default function Home() {
           </div>
         }
       >
-        <DataTableClient initialData={data} />
+        <DataTableClient />
       </Suspense>
     </PageShell>
   );

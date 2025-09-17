@@ -1,12 +1,67 @@
 import { faker } from '@faker-js/faker';
 import { subMonths, format } from 'date-fns';
-import { TableRow, Status } from '@/types/table';
+import { TableRow, Status, PmsSyncStatus } from '@/types/table';
 
 // Set seed for deterministic data generation
 faker.seed(12345);
 
 const STATUSES: Status[] = ['REJECTED', 'PENDING', 'CALL', 'RESUBMITTED'];
 const STATUS_WEIGHTS = [0.15, 0.35, 0.25, 0.25]; // Weighted distribution
+
+const PMS_SYNC_STATUSES: PmsSyncStatus[] = [
+  'SYNCED',
+  'PENDING',
+  'FAILED',
+  'NOT_SYNCED',
+];
+const PMS_SYNC_WEIGHTS = [0.6, 0.2, 0.1, 0.1]; // Weighted distribution
+
+const INSURANCE_CARRIERS = [
+  'BCBS OF COLORADO',
+  'Aetna',
+  'Cigna',
+  'UnitedHealthcare',
+  'Humana',
+  'Kaiser Permanente',
+  'Medicare',
+  'Medicaid',
+  'Anthem',
+  'Molina Healthcare',
+];
+
+const INSURANCE_PLANS = [
+  'FEP PPO INN',
+  'HMO Standard',
+  'PPO Premium',
+  'EPO Basic',
+  'POS Standard',
+  'HDHP',
+  'Medicare Advantage',
+  'Medicaid Managed Care',
+  'Commercial PPO',
+  'Self-Pay',
+];
+
+const PROVIDERS = [
+  'Dr. Sarah Johnson',
+  'Dr. Michael Chen',
+  'Dr. Emily Rodriguez',
+  'Dr. David Thompson',
+  'Dr. Lisa Wang',
+  'Dr. James Wilson',
+  'Dr. Maria Garcia',
+  'Dr. Robert Brown',
+  'Dr. Jennifer Davis',
+  'Dr. Christopher Lee',
+];
+
+const USERS = [
+  'admin@clinic.com',
+  'nurse1@clinic.com',
+  'nurse2@clinic.com',
+  'billing@clinic.com',
+  'manager@clinic.com',
+];
 
 function getWeightedStatus(): Status {
   const random = Math.random();
@@ -22,6 +77,20 @@ function getWeightedStatus(): Status {
   return STATUSES[0]; // fallback
 }
 
+function getWeightedPmsSyncStatus(): PmsSyncStatus {
+  const random = Math.random();
+  let cumulative = 0;
+
+  for (let i = 0; i < PMS_SYNC_STATUSES.length; i++) {
+    cumulative += PMS_SYNC_WEIGHTS[i];
+    if (random <= cumulative) {
+      return PMS_SYNC_STATUSES[i];
+    }
+  }
+
+  return PMS_SYNC_STATUSES[0]; // fallback
+}
+
 function generateTableRow(id: number): TableRow {
   // Generate service date within the last 18 months
   const serviceDate = faker.date.between({
@@ -35,12 +104,80 @@ function generateTableRow(id: number): TableRow {
     to: new Date(),
   });
 
+  // Generate date sent (usually after service date)
+  const dateSent = faker.date.between({
+    from: serviceDate,
+    to: new Date(),
+  });
+
+  // Generate original date sent (usually same as date sent, sometimes different)
+  const dateSentOrig =
+    faker.helpers.maybe(
+      () =>
+        faker.date.between({
+          from: serviceDate,
+          to: dateSent,
+        }),
+      { probability: 0.3 }
+    ) || dateSent;
+
+  const patientName = faker.person.fullName();
+  const providerName = faker.helpers.arrayElement(PROVIDERS);
+  const user = faker.helpers.arrayElement(USERS);
+  const insuranceCarrier = faker.helpers.arrayElement(INSURANCE_CARRIERS);
+  const insurancePlan = faker.helpers.arrayElement(INSURANCE_PLANS);
+  const insuranceType = faker.helpers.arrayElement([
+    'Primary',
+    'Secondary',
+    'Tertiary',
+  ] as const);
+  const pmsSyncStatus = getWeightedPmsSyncStatus();
+
+  // Generate initials from names
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase();
+  };
+
+  // Generate PMS sync messages
+  const getPmsSyncMessage = (status: PmsSyncStatus) => {
+    switch (status) {
+      case 'NOT_SYNCED':
+        return 'Status modified today';
+      case 'PENDING':
+        return 'Sync in progress';
+      case 'FAILED':
+        return 'Sync failed - retry needed';
+      case 'SYNCED':
+        return 'Successfully synced';
+      default:
+        return '';
+    }
+  };
+
   return {
     id: `row-${id}`,
-    name: faker.person.fullName(),
-    status: getWeightedStatus(),
+    patient: patientName,
+    patientId: faker.string.numeric(5),
     serviceDate: serviceDate.toISOString(),
+    insuranceCarrier,
+    insurancePlan,
+    insuranceType,
+    amount: faker.number.float({ min: 50, max: 5000, fractionDigits: 2 }),
+    status: getWeightedStatus(),
     lastUpdated: lastUpdated.toISOString(),
+    lastUpdatedTime: lastUpdated.toISOString(),
+    user,
+    userInitials: getInitials(user.split('@')[0]),
+    dateSent: dateSent.toISOString(),
+    dateSentOrig: dateSentOrig.toISOString(),
+    pmsSyncStatus,
+    pmsSyncMessage: getPmsSyncMessage(pmsSyncStatus),
+    provider: providerName,
+    providerId: faker.string.numeric(11),
   };
 }
 
@@ -66,6 +203,19 @@ export function getTableData(): TableRow[] {
 // Utility function to format dates for display
 export function formatDate(isoString: string): string {
   return format(new Date(isoString), 'MMM dd, yyyy');
+}
+
+// Utility function to format currency amounts
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount);
+}
+
+// Utility function to format time
+export function formatTime(isoString: string): string {
+  return format(new Date(isoString), 'h:mm a');
 }
 
 // Utility function to get relative time

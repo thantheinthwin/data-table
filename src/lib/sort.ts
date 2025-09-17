@@ -28,9 +28,19 @@ export function sortTableRows(
     let bValue: string | number;
 
     switch (field) {
-      case 'name':
-        aValue = a.name.toLowerCase();
-        bValue = b.name.toLowerCase();
+      case 'patient':
+        aValue = a.patient.toLowerCase();
+        bValue = b.patient.toLowerCase();
+        return compareValues(aValue, bValue, direction);
+
+      case 'insuranceCarrier':
+        aValue = a.insuranceCarrier.toLowerCase();
+        bValue = b.insuranceCarrier.toLowerCase();
+        return compareValues(aValue, bValue, direction);
+
+      case 'amount':
+        aValue = a.amount;
+        bValue = b.amount;
         return compareValues(aValue, bValue, direction);
 
       case 'status':
@@ -40,8 +50,27 @@ export function sortTableRows(
         bValue = statusOrder.indexOf(b.status);
         return compareValues(aValue, bValue, direction);
 
+      case 'user':
+        aValue = a.user.toLowerCase();
+        bValue = b.user.toLowerCase();
+        return compareValues(aValue, bValue, direction);
+
+      case 'pmsSyncStatus':
+        // Sort by PMS sync status in a stable order
+        const pmsSyncOrder = ['SYNCED', 'PENDING', 'FAILED', 'NOT_SYNCED'];
+        aValue = pmsSyncOrder.indexOf(a.pmsSyncStatus);
+        bValue = pmsSyncOrder.indexOf(b.pmsSyncStatus);
+        return compareValues(aValue, bValue, direction);
+
+      case 'provider':
+        aValue = a.provider.toLowerCase();
+        bValue = b.provider.toLowerCase();
+        return compareValues(aValue, bValue, direction);
+
       case 'serviceDate':
       case 'lastUpdated':
+      case 'dateSent':
+      case 'dateSentOrig':
         aValue = new Date(a[field]).getTime();
         bValue = new Date(b[field]).getTime();
         return compareValues(aValue, bValue, direction);

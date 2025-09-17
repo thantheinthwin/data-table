@@ -1,7 +1,7 @@
 'use client';
 
 import { TableRow, SortField, SortDirection } from '@/types/table';
-import { formatDate, getRelativeTime } from '@/lib/generateData';
+import { formatDate, formatCurrency, formatTime } from '@/lib/generateData';
 
 interface TableProps {
   rows: TableRow[];
@@ -10,11 +10,17 @@ interface TableProps {
   onSort: (field: SortField) => void;
 }
 
-const STATUS_COLORS = {
+const PMS_SYNC_STATUS_COLORS = {
+  SYNCED: 'bg-green-100 text-green-800',
   PENDING: 'bg-yellow-100 text-yellow-800',
-  CALL: 'bg-blue-100 text-blue-800',
-  RESUBMITTED: 'bg-purple-100 text-purple-800',
-  REJECTED: 'bg-red-100 text-red-800',
+  FAILED: 'bg-red-100 text-red-800',
+  NOT_SYNCED: 'bg-gray-100 text-gray-800',
+};
+
+const INSURANCE_TYPE_COLORS = {
+  Primary: 'bg-blue-100 text-blue-800',
+  Secondary: 'bg-orange-100 text-orange-800',
+  Tertiary: 'bg-purple-100 text-purple-800',
 };
 
 function SortIcon({
@@ -97,26 +103,12 @@ export default function Table({
             <th
               scope="col"
               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('name')}
+              onClick={() => onSort('patient')}
             >
               <div className="flex items-center gap-2">
-                Name
+                Patient
                 <SortIcon
-                  field="name"
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                />
-              </div>
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => onSort('status')}
-            >
-              <div className="flex items-center gap-2">
-                Status
-                <SortIcon
-                  field="status"
+                  field="patient"
                   sortField={sortField}
                   sortDirection={sortDirection}
                 />
@@ -139,6 +131,48 @@ export default function Table({
             <th
               scope="col"
               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => onSort('insuranceCarrier')}
+            >
+              <div className="flex items-center gap-2">
+                Insurance Carrier
+                <SortIcon
+                  field="insuranceCarrier"
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                />
+              </div>
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => onSort('amount')}
+            >
+              <div className="flex items-center gap-2">
+                Amount
+                <SortIcon
+                  field="amount"
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                />
+              </div>
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => onSort('status')}
+            >
+              <div className="flex items-center gap-2">
+                Status
+                <SortIcon
+                  field="status"
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                />
+              </div>
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => onSort('lastUpdated')}
             >
               <div className="flex items-center gap-2">
@@ -150,29 +184,231 @@ export default function Table({
                 />
               </div>
             </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => onSort('user')}
+            >
+              <div className="flex items-center gap-2">
+                User
+                <SortIcon
+                  field="user"
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                />
+              </div>
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => onSort('dateSent')}
+            >
+              <div className="flex items-center gap-2">
+                Date Sent
+                <SortIcon
+                  field="dateSent"
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                />
+              </div>
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => onSort('dateSentOrig')}
+            >
+              <div className="flex items-center gap-2">
+                <div className="text-center">
+                  <div>Date Sent</div>
+                  <div>Orig</div>
+                </div>
+                <SortIcon
+                  field="dateSentOrig"
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                />
+              </div>
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => onSort('pmsSyncStatus')}
+            >
+              <div className="flex items-center gap-2">
+                PMS Sync Status
+                <SortIcon
+                  field="pmsSyncStatus"
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                />
+              </div>
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => onSort('provider')}
+            >
+              <div className="flex items-center gap-2">
+                Provider
+                <SortIcon
+                  field="provider"
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                />
+              </div>
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {rows.map((row) => (
             <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {row.name}
-              </td>
+              {/* Patient */}
               <td className="px-6 py-4 whitespace-nowrap">
-                <span
-                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${STATUS_COLORS[row.status]}`}
-                >
-                  {row.status}
-                </span>
+                <div className="text-sm font-medium text-gray-900">
+                  {row.patient}
+                </div>
+                <div className="text-sm text-gray-500">ID: {row.patientId}</div>
               </td>
+
+              {/* Service Date */}
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {formatDate(row.serviceDate)}
               </td>
-              <td
-                className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                title={formatDate(row.lastUpdated)}
-              >
-                {getRelativeTime(row.lastUpdated)}
+
+              {/* Insurance Carrier */}
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="text-sm text-gray-900">
+                  {row.insuranceCarrier}
+                </div>
+                <div className="text-sm text-gray-500">{row.insurancePlan}</div>
+                <div className="mt-1">
+                  <span
+                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${INSURANCE_TYPE_COLORS[row.insuranceType]}`}
+                  >
+                    {row.insuranceType}
+                  </span>
+                </div>
+              </td>
+
+              {/* Amount */}
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {formatCurrency(row.amount)}
+              </td>
+
+              {/* Status */}
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                NCOF - {row.status}
+              </td>
+
+              {/* Last Updated */}
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="text-sm text-gray-900">
+                  {formatDate(row.lastUpdated)}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {formatTime(row.lastUpdatedTime)}
+                </div>
+              </td>
+
+              {/* User */}
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-medium text-green-800">
+                      {row.userInitials}
+                    </span>
+                  </div>
+                </div>
+              </td>
+
+              {/* Date Sent */}
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {formatDate(row.dateSent)}
+              </td>
+
+              {/* Date Sent Orig */}
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {formatDate(row.dateSentOrig)}
+              </td>
+
+              {/* PMS Sync Status */}
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex flex-col">
+                  <div className="flex items-center">
+                    <span
+                      className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${PMS_SYNC_STATUS_COLORS[row.pmsSyncStatus]}`}
+                    >
+                      {row.pmsSyncStatus === 'NOT_SYNCED' && (
+                        <svg
+                          className="w-3 h-3 mr-1"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      )}
+                      {row.pmsSyncStatus === 'SYNCED' && (
+                        <svg
+                          className="w-3 h-3 mr-1"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      )}
+                      {row.pmsSyncStatus === 'PENDING' && (
+                        <svg
+                          className="w-3 h-3 mr-1"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      )}
+                      {row.pmsSyncStatus === 'FAILED' && (
+                        <svg
+                          className="w-3 h-3 mr-1"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      )}
+                      {row.pmsSyncStatus === 'NOT_SYNCED'
+                        ? 'Not synced'
+                        : row.pmsSyncStatus}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {row.pmsSyncMessage}
+                  </div>
+                </div>
+              </td>
+
+              {/* Provider */}
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="text-sm font-medium text-gray-900">
+                  {row.provider}
+                </div>
+                <div className="text-sm text-gray-500">
+                  ID: {row.providerId}
+                </div>
               </td>
             </tr>
           ))}
